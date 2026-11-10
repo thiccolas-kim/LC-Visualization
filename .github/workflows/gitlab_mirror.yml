@@ -1,0 +1,28 @@
+name: Mirror to GWDG GitLab
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitHub repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to GWDG GitLab
+        env:
+          GITLAB_USER: ${{ secrets.TARGET_USERNAME }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_ACCESS_TOKEN }}
+          GITLAB_URL: ${{ secrets.TARGET_URL }}
+        run: |
+          git push "https://${GITLAB_USER}:${GITLAB_TOKEN}@${GITLAB_URL}" HEAD:refs/heads/main
